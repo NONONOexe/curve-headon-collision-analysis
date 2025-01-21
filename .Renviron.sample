@@ -1,0 +1,6 @@
+DATA_DIR=/path/to/project/data
+RAW_DATA_DIR=${DATA_DIR}/raw
+INTERMEDIATE_DATA_DIR=${DATA_DIR}/intermediate
+PROCESSED_DATA_DIR=${DATA_DIR}/processed
+MODEL_DIR=${DATA_DIR}/models
+PLOT_DIR=${DATA_DIR}/plots
