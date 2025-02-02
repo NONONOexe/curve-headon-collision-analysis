@@ -1,11 +1,12 @@
-library(jpaccidents)
+# install.package("pak")
+# pak::pak("NONONOexe/jpaccidents")
 
 # Get the directory for raw data from the environment variable
 download_dir <- Sys.getenv("RAW_DATA_DIR")
 
 # Download traffic accident data the years 2019 to 2023
 # The data is saved in the directory specified `download_dir`
-accident_data_path <- download_accident_data(
+accident_data_path <- jpaccidents::download_accident_data(
   type         = "main",
   download_dir = download_dir,
   year         = 2019:2023
