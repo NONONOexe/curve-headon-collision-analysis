@@ -1,4 +1,4 @@
-# This script cleans the accident data and saves it as an RDS file
+# This script cleans the accident data and saves it as an RDS file.
 
 # Get the directory for intermediate data from the environment variable
 intermediate_dir <- Sys.getenv("INTERMEDIATE_DATA_DIR")

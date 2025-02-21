@@ -1,4 +1,4 @@
-# This script extracts head-on collision accidents from the accident data
+# This script extracts head-on collision accidents from the accident data.
 
 # Get the directory for intermediate data from the environment variable
 intermediate_dir <- Sys.getenv("INTERMEDIATE_DATA_DIR")
