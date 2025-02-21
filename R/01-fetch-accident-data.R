@@ -1,3 +1,5 @@
+# This script downloads traffic accident data for the years 2019 to 2023
+
 # Get the directory for raw data from the environment variable
 download_dir <- Sys.getenv("RAW_DATA_DIR")
 
