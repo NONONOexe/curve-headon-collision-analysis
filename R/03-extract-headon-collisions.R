@@ -12,9 +12,9 @@ vehicle_accidents <- accident_data |>
 
 # Define head-on collision patterns
 collision_patterns <- list(
-  c("front"      , "front"      ),
-  c("front_right", "front"      ),
-  c("front"      , "front_right"),
+  c("front", "front"),
+  c("front_right", "front"),
+  c("front", "front_right"),
   c("front_right", "front_right")
 )
 

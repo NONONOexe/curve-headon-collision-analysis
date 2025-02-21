@@ -1,7 +1,3 @@
-# Load necessary packages
-# install.package("pak")
-# pak::pak("NONONOexe/jpaccidents")
-
 # Get the directory for raw data from the environment variable
 download_dir <- Sys.getenv("RAW_DATA_DIR")
 
