@@ -1,12 +1,17 @@
 # This script extracts head-on collision accidents from the accident data.
+#
+# INPUTS:
+#   {INTERMEDIATE_DATA_DIR}/accident_data.rds: Cleaned accident data
+#
+# OUTPUTS:
+#   {INTERMEDIATE_DATA_DIR}/headon_collisions.rds: Head-on collision accidents
+#
 
 # Get the directory for intermediate data from the environment variable
 intermediate_dir <- Sys.getenv("INTERMEDIATE_DATA_DIR")
 
 # Define the path to the accident data and read the data
-accident_data <- readRDS(
-  file.path(intermediate_dir, "02-accident_data.rds")
-)
+accident_data <- readRDS(file.path(intermediate_dir, "accident_data.rds"))
 
 # Filter only vehicle-to-vehicle accidents
 vehicle_accidents <- accident_data |>
@@ -31,5 +36,5 @@ headon_collisions <- collision_patterns |>
 # Save the filtered data
 saveRDS(
   headon_collisions,
-  file = file.path(intermediate_dir, "03-headon_collisions.rds")
+  file = file.path(intermediate_dir, "headon_collisions.rds")
 )
