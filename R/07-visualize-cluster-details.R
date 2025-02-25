@@ -43,7 +43,7 @@ fetch_cluster_roads <- function(centroid_point) {
 create_cluster_map <- function(centroid_point, cluster_id, clustered_points) {
   # Get road data
   roads <- fetch_cluster_roads(centroid_point)
-  
+
   # Filter accident points for the specific cluster
   cluster_accidents <- clustered_points |>
     dplyr::filter(.data$cluster == cluster_id)
