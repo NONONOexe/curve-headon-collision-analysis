@@ -46,7 +46,10 @@ combine_road_data <- function(data_paths) {
 intermediate_dir <- Sys.getenv("INTERMEDIATE_DATA_DIR")
 
 # Read and filter accident data for curves
-accident_data <- readr::read_rds(file.path(intermediate_dir, "accident_data.rds"))
+accident_data <- readr::read_rds(file.path(
+  intermediate_dir,
+  "accident_data.rds"
+))
 curve_accidents <- accident_data |>
   jpaccidents::filter_accident_type("vehicle_to_vehicle") |>
   jpaccidents::filter_road_shape("curve")
@@ -65,11 +68,17 @@ split_data |>
   purrr::iwalk(function(batch, idx) {
     cli::cli_alert_info("Processing group: {idx}/{length(split_data)}")
 
-    result <- try({
-      around_roads <- fetch_road_data(batch)
-      file_path <- file.path(intermediate_dir, sprintf("around_roads-%02d.rds", idx))
-      readr::write_rds(around_roads, file_path)
-    }, silent = TRUE)
+    result <- try(
+      {
+        around_roads <- fetch_road_data(batch)
+        file_path <- file.path(
+          intermediate_dir,
+          sprintf("around_roads-%02d.rds", idx)
+        )
+        readr::write_rds(around_roads, file_path)
+      },
+      silent = TRUE
+    )
 
     if (inherits(result, "try-error")) {
       cli::cli_alert_warning("Error in group {idx}, skipping...")
@@ -77,7 +86,11 @@ split_data |>
   })
 
 # Combine and save final results
-data_paths <- fs::dir_ls(intermediate_dir, type = "file", regexp = "around_roads-\\d{2}[.]rds") |>
+data_paths <- fs::dir_ls(
+  intermediate_dir,
+  type = "file",
+  regexp = "around_roads-\\d{2}[.]rds"
+) |>
   sort()
 around_roads <- combine_road_data(data_paths)
 readr::write_rds(around_roads, file.path(intermediate_dir, "around_roads.rds"))

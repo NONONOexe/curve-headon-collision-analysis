@@ -17,7 +17,7 @@ prepare_curvature_for_analysis <- function(headon_collisions, road_curvatures) {
   # Filter out infinite curvature values
   curve_roads <- road_curvatures |>
     dplyr::filter(curvature != Inf)
-  
+
   # Define key columns for joining datasets
   accident_data_key_columns <- c(
     "document_type",
@@ -49,19 +49,19 @@ prepare_curvature_for_analysis <- function(headon_collisions, road_curvatures) {
       by = accident_data_key_columns
     ) |>
     dplyr::mutate(headon = 0L)
-  
+
   # Combine and select relevant columns
   headon_labeled_curvatures <- dplyr::bind_rows(
     curve_roads_headon,
     curve_roads_others
   ) |>
-  dplyr::select(
-    dplyr::all_of(accident_data_key_columns),
-    curvature,
-    headon,
-    nearest_road,
-    accident_point
-  )
+    dplyr::select(
+      dplyr::all_of(accident_data_key_columns),
+      curvature,
+      headon,
+      nearest_road,
+      accident_point
+    )
 
   return(headon_labeled_curvatures)
 }
@@ -80,8 +80,8 @@ create_curvature_plot <- function(curvature_data) {
     ) +
     ggplot2::geom_vline(
       data = curvature_data |>
-          dplyr::group_by(headon = factor(headon)) |>
-          dplyr::summarize(median = median(curvature)),
+        dplyr::group_by(headon = factor(headon)) |>
+        dplyr::summarize(median = median(curvature)),
       mapping = ggplot2::aes(xintercept = median),
       colour = "black",
       linetype = "dashed"
@@ -109,7 +109,7 @@ analyze_curvature_data <- function(curvature_data) {
     dplyr::pull(curvature)
   print(summary(headon_curvature))
   cat("SD:", stats::sd(headon_curvature), "\n\n")
-  
+
   # Extract and summarize other collision curvature data
   cat("Other collisions curvature summary:\n")
   others_curvature <- curvature_data |>
@@ -117,11 +117,11 @@ analyze_curvature_data <- function(curvature_data) {
     dplyr::pull(curvature)
   print(summary(others_curvature))
   cat("SD:", stats::sd(others_curvature), "\n\n")
-  
+
   # Perform Wilcoxon rank sum test
   result <- stats::wilcox.test(headon_curvature, others_curvature)
   print(result)
-  
+
   # Calculate effect size
   n_headon <- length(headon_curvature)
   n_others <- length(others_curvature)
@@ -134,11 +134,20 @@ intermediate_dir <- Sys.getenv("INTERMEDIATE_DATA_DIR")
 plot_dir <- Sys.getenv("PLOT_DIR")
 
 # Load required data
-road_curvatures <- readr::read_rds(file.path(intermediate_dir, "road_curvatures.rds"))
-headon_collisions <- readr::read_rds(file.path(intermediate_dir, "headon_collisions.rds"))
+road_curvatures <- readr::read_rds(file.path(
+  intermediate_dir,
+  "road_curvatures.rds"
+))
+headon_collisions <- readr::read_rds(file.path(
+  intermediate_dir,
+  "headon_collisions.rds"
+))
 
 # Process curvature data
-curvature_data <- prepare_curvature_for_analysis(headon_collisions, road_curvatures)
+curvature_data <- prepare_curvature_for_analysis(
+  headon_collisions,
+  road_curvatures
+)
 
 # Create and save plot
 plot <- create_curvature_plot(curvature_data)
