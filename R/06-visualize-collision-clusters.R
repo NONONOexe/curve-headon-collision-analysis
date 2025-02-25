@@ -1,12 +1,16 @@
 # This script visualizes the clusters of head-on collisions.
 #
 # INPUTS:
-#   {INTERMEDIATE_DATA_DIR}/clustered_points.rds: Clustered points
-#   {INTERMEDIATE_DATA_DIR}/curve_clustered_points.rds: Clustered points
+#   - {INTERMEDIATE_DATA_DIR}/clustered_points.rds: Clustered points
+#   - {INTERMEDIATE_DATA_DIR}/curve_clustered_points.rds: Clustered points
 #
 # OUTPUTS:
-#   {PLOT_DIR}/headon_collision_clusters.pdf: Visualization of head-on collision
-#   clusters
+#   - {INTERIM_DATA_DIR}/cluster_centroids.rds: Centroids and summary
+#     statistics of head-on collision clusters
+#   - {PLOT_DIR}/headon_collision_clusters.pdf: Static visualization of head-on
+#     collision cluster locations
+#   - {PLOT_DIR}/curve_headon_collision_clusters.pdf: Static visualization of
+#     head-on collision clusters at curved roads
 #
 
 # Load sf package to handle spatial vector data classes
