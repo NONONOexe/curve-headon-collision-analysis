@@ -53,7 +53,7 @@ create_cluster_map <- function(centroid_point, cluster_id, clustered_points) {
     ggplot2::geom_sf(
       data = roads$secondary_roads,
       linewidth = 2.5,
-      colour = "#CDCDCD"
+      colour = "#cdcdcd"
     ) +
     ggplot2::geom_sf(
       data = roads$main_roads,
