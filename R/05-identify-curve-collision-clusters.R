@@ -1,5 +1,12 @@
 # This script identifies clusters of head-on collision accidents on curves
 # using DBSCAN algorithm.
+#
+# INPUTS:
+#   {INTERMEDIATE_DATA_DIR}/headon_collisions.rds: Head-on collision accidents
+#
+# OUTPUTS:
+#   {INTERMEDIATE_DATA_DIR}/curve_clustered_points.rds: Clustered points
+#
 
 # Load sf package to handle spatial vector data classes
 library(sf)
@@ -9,7 +16,7 @@ intermediate_dir <- Sys.getenv("INTERMEDIATE_DATA_DIR")
 
 # Read the head-on collision accident data
 headon_data <- readr::read_rds(
-  file.path(intermediate_dir, "03-headon_collisions.rds")
+  file.path(intermediate_dir, "headon_collisions.rds")
 )
 
 # Extract accident coordinates occurring on curves
@@ -24,7 +31,9 @@ curve_accident_coords <- curve_accident_points |>
 
 # Perform DBSCAN clustering
 curve_collion_clusters <- dbscan::dbscan(
-  curve_accident_coords, eps = 10, minPts = 2
+  curve_accident_coords,
+  eps = 10,
+  minPts = 2
 )
 
 # Assign cluster labels and remove noise points (cluster 0)
@@ -35,5 +44,5 @@ curve_clustered_points <- curve_accident_points |>
 # Save the clustering results
 readr::write_rds(
   curve_clustered_points,
-  file.path(intermediate_dir, "05-curve_clustered_points.rds")
+  file.path(intermediate_dir, "curve_clustered_points.rds")
 )
