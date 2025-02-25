@@ -15,43 +15,21 @@ library(sf)
 get_sampling_points <- function(road, point, closest_point, path_distance) {
   # Split the road at the nearest point
   split_roads <- pavement::split_linestring(road, closest_point)
-  
+
   # Calculate distances for sampling along the road
   to_closest_point <- as.double(sf::st_length(split_roads[1, ]))
   road_length <- as.double(sf::st_length(road))
-  
+
   # Define sampling offsets
   sample_offsets <- c(path_distance, 0, -path_distance)
   sample_ratio <- (sample_offsets + to_closest_point) / road_length
-  
+
   # Sample points along the road at the computed positions
   road |>
     sf::st_transform(crs = 3395) |>
     sf::st_line_sample(sample = sample_ratio) |>
     sf::st_transform(crs = 4326) |>
     sf::st_cast("POINT")
-}
-
-# Function to crop road curve
-crop_curve <- function(road, point, path_distance = 50) {
-  # Find the nearest point on the road from the given point
-  closest_point <- sf::st_nearest_points(point, road) |>
-    sf::st_cast("POINT") |>
-    purrr::pluck(2) |>
-    sf::st_sfc(crs = 4326)
-  
-  # Get sampling points along the road
-  sampled_points <- get_sampling_points(road, point, closest_point, path_distance)
-  
-  # Split the road at the sampled points
-  split_roads <- pavement::split_linestring(road, sampled_points[c(1, 3)])
-  
-  # Return the middle segment if available, otherwise return the original road
-  if (length(split_roads) == 3) {
-    return(split_roads[2])
-  } else {
-    return(road)
-  }
 }
 
 # Function to calculate curvature
@@ -61,28 +39,33 @@ calc_curvature <- function(road, point, path_distance = 50) {
     sf::st_cast("POINT") |>
     purrr::pluck(2) |>
     sf::st_sfc(crs = 4326)
-  
+
   # Get sampling points along the road
-  sampled_points <- get_sampling_points(road, point, closest_point, path_distance)
-  
+  sampled_points <- get_sampling_points(
+    road,
+    point,
+    closest_point,
+    path_distance
+  )
+
   # Create a convex hull from the sampled points to form a triangle
   triangle <- sampled_points |>
     sf::st_union() |>
     sf::st_convex_hull()
-  
+
   # Calculate the area of the triangle
   area <- sf::st_area(triangle)
-  
+
   # Compute pairwise distances between the sampled points
   pairwise_distances <- sf::st_distance(sampled_points)
-  
+
   # Calculate curvature using the triangle's area and distances
   curvature <- 4 *
     area /
     (pairwise_distances[1, 2] *
       pairwise_distances[2, 3] *
       pairwise_distances[3, 1])
-  
+
   return(curvature)
 }
 
@@ -107,7 +90,7 @@ process_nearest_roads <- function(around_roads) {
 # Calculate road curvatures
 calculate_road_curvatures <- function(nearest_roads) {
   safe_calc_curvature <- purrr::possibly(calc_curvature, otherwise = NA_real_)
-  
+
   nearest_roads |>
     dplyr::mutate(
       curvature = purrr::map2_dbl(
@@ -132,4 +115,7 @@ nearest_roads <- process_nearest_roads(around_roads)
 road_curvatures <- calculate_road_curvatures(nearest_roads)
 
 # Save road curvatures
-readr::write_rds(road_curvatures, file.path(intermediate_dir, "road_curvatures.rds"))
+readr::write_rds(
+  road_curvatures,
+  file.path(intermediate_dir, "road_curvatures.rds")
+)
