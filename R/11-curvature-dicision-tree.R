@@ -107,6 +107,54 @@ create_importance_plot <- function(decision_tree) {
     )
 }
 
+# Function to get sampling points along the road
+get_sampling_points <- function(road, point, closest_point, path_distance) {
+  # Split the road at the nearest point
+  split_roads <- pavement::split_linestring(road, closest_point)
+
+  # Calculate distances for sampling along the road
+  to_closest_point <- as.double(sf::st_length(split_roads[1, ]))
+  road_length <- as.double(sf::st_length(road))
+
+  # Define sampling offsets
+  sample_offsets <- c(path_distance, 0, -path_distance)
+  sample_ratio <- (sample_offsets + to_closest_point) / road_length
+
+  # Sample points along the road at the computed positions
+  road |>
+    sf::st_transform(crs = 3395) |>
+    sf::st_line_sample(sample = sample_ratio) |>
+    sf::st_transform(crs = 4326) |>
+    sf::st_cast("POINT")
+}
+
+# Function to crop the road curve
+crop_curve <- function(road, point, path_distance = 50) {
+  # Find the nearest point on the road from the given point
+  closest_point <- sf::st_nearest_points(point, road) |>
+    sf::st_cast("POINT") |>
+    purrr::pluck(2) |>
+    sf::st_sfc(crs = 4326)
+
+  # Get sampling points along the road
+  sampled_points <- get_sampling_points(
+    road,
+    point,
+    closest_point,
+    path_distance
+  )
+
+  # Split the road at the sampled points
+  split_roads <- pavement::split_linestring(road, sampled_points[c(1, 3)])
+
+  # Return the middle segment if available, otherwise return the original road
+  if (length(split_roads) == 3) {
+    split_roads[2]
+  } else {
+    road
+  }
+}
+
 # Extract road data based on curvature threshold
 extract_road_data <- function(curvature_data, threshold, slice_num) {
   nearest_data <- curvature_data |>
